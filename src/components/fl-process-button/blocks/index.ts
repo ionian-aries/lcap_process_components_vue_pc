@@ -1,5 +1,5 @@
 import * as naslTypes from '@nasl/ast-mini';
-import { logicNamespace, structureNamespace } from '../../../../../../lcap_process_components_vue/src/components/utils';
+import { logicNamespace, structureNamespace } from '../../utils';
 
 // 生成流程信息
 export function genFlProcessButton(node: naslTypes.ViewElement | any) {
@@ -38,6 +38,7 @@ export function genFlProcessButton(node: naslTypes.ViewElement | any) {
     revertFlowRadioRef: view.getViewElementUniqueName('radios_revert_flow'), // 撤回流转到单选组
     revertReSubmitRadioRef: view.getViewElementUniqueName('radios_revert_resubmit'), // 撤回重新提交到单选组
     revertFormRef: view.getViewElementUniqueName('form_revert'), // 撤回表单
+    buttonToastRef: view.getViewElementUniqueName('button_toast'), // 回退提示
   };
 
   // 流程需要使用页面输入参数‘taskId’，且不带数字后缀，这里不做唯一性命名
@@ -216,7 +217,9 @@ this.$on('hook:beforeDestroy', () => {
 }
 
 function genTemplate(nameGroup: Record<string, string>, logicNamespace: string) {
-  return `<ULinearLayout direction="horizontal" wrap={true} mode="flex"  alignment="center" justify="center" style="padding-top:24px;padding-bottom:24px;">
+  return `<ULinearLayout 
+  _if={nasl.util.HasValue(${nameGroup.permissionButtonMapVar})}
+  direction="horizontal" wrap={true} mode="flex"  alignment="center" justify="center" style="padding-top:24px;padding-bottom:24px;">
     <ULinearLayout direction="horizontal" wrap={true} mode="flex"  alignment="center" justify="center">
       <UButton
         _if={nasl.util.HasValue(${nameGroup.permissionButtonMapVar}, nasl.util.MapGet(${nameGroup.permissionButtonMapVar}, 'submit'))}
@@ -466,6 +469,10 @@ setTimeout(() => {
                 if (${nameGroup.buttonItemVar}.name == 'revert') {
                   if ($refs.${nameGroup.revertFormRef}.validate(undefined, undefined).valid) {
                   } else {
+                    if (nasl.util.HasValue(${nameGroup.buttonBody}.nodeId)) {
+                    } else {
+                      $refs.${nameGroup.buttonToastRef}.open();
+                    }
                     return;
                   }
                 }
@@ -569,5 +576,12 @@ setTimeout(() => {
         <UText text={${nameGroup.buttonItemVar}.displayText}></UText>
       }>
     </UModal>
+    
+    <UToastSingle
+      ref="${nameGroup.buttonToastRef}"
+      text="无可流转节点，请联系管理员"
+      duration={2000}
+      color="error"
+    ></UToastSingle>
   </ULinearLayout>`;
 }

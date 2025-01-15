@@ -23,7 +23,7 @@ export function genFlProcessGraph(node: naslTypes.ViewElement | any) {
   };
 
   view.addLogic({
-    concept: 'Logic',
+    concept: view.concept === 'View' ? 'Logic' : 'BusinessLogic',
     name: `${nameGroup.getProcInstGraphEvent}`,
     description: '获取流程图',
     params: [],

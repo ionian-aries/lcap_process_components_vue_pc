@@ -430,12 +430,12 @@ ${nameGroup.url} = window.location.origin + ${nameGroup.url};\`);
                 (current) => <UText
                   text={(function match(_value) {
                     if (_value === true) {
-                      return nasl.util.Join(nasl.util.ListTransform(current.item.procInstCurrNodes, (item: ${structureNamespace}.CurrNode) => item.currNodeTitle), '，')
+                      return current.item.nodeTitle
                     } else if (_value === false) {
                       return '-'
                     } else {
                     }
-                  })(nasl.util.HasValue(current.item.procInstCurrNodes))}
+                  })(nasl.util.HasValue(current.item.nodeTitle))}
                 ></UText>
               }
               slotExpander={
